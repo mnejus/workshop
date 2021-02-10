@@ -6,9 +6,6 @@ __pycache__/
 # C extensions
 *.so
 
-#file with secret_key
-secret_key.txt
-
 # Distribution / packaging
 .Python
 build/
