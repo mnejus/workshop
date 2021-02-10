@@ -1,0 +1,33 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+
+<form action="" method="POST">{% csrf_token %}
+
+<table cellspacing="1" cellpadding="5">
+  <tr>
+    <td>Data</td>
+    <td>Tytuł</td>
+    <td>Kwota</td>
+    <td>Forma płatności</td>
+    <td>Rodzaj płatności</td>
+    <td></td>
+  </tr>
+  <tr>
+    <td>{{ form.data_przychodu_rozchodu }}</td>
+    <td>{{ form.tytul_rozchodu_przychodu }}</td>
+    <td>{{ form.kwota_rozchodu_przychodu }}zł</td>
+    <td>{{ form.forma_platnosci }}</td>
+    <td>{{ form.rodzaj_platnosci }}</td>
+    <td>
+    
+        <button type="submit">Zapisz</button>
+    
+    </td>
+    
+  </tr>
+</table>
+</form>
+
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+
+
+<p>Chcesz usunąć zgłoszenie kosztorysu z dnia {{ kosztorysy.data_zgloszenia }} dotyczący:<br><br> 
+
+Klient: {{ kosztorysy.nazwa_klienta }}<br><br>
+Pojazd: {{ kosztorysy.marka_model }} </p>
+
+<form action="" method="POST">
+  {% csrf_token %}
+  <input type="submit" value="Tak, potwierdzam">
+</form>
+
+
+
+{% endblock %}

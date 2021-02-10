@@ -1,0 +1,17 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+{% if request.user.is_superuser %}
+
+<p>Chcesz usunąć pozycję: <strong>{{ zamowienia.nr_katalogowy }}</strong> z dnia
+{{ zamowienia.data_zamowienia }} dla {{ zamowienia.odbiorca }}?</p>
+
+<form action="" method="POST">
+  {% csrf_token %}
+  <input type="submit" value="Tak, potwierdzam">
+</form>
+
+{% endif %}
+
+{% endblock %}

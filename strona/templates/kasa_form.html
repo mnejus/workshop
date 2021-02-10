@@ -1,0 +1,16 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+
+  <form action="" method="post">
+    {% csrf_token %}
+    Tytuł płatności: {{ form.tytul_rozchodu_przychodu }}
+    Kwota: {{ form.kwota_rozchodu_przychodu }}
+    Forma Płatności: {{ form.forma_platnosci }}
+    <input type="submit" value="Zapisz/Otwórz Kasę">
+    <input type="reset" value="Wyczyść">
+  </form>
+	
+
+{% endblock %}

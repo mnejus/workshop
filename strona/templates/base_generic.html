@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <link rel="stylesheet" href="{% static 'css/strona.css' %}">
+  
+  {% block title %}<title>Nejman Serwis</title>{% endblock %}
+</head>
+<body>
+{% if user.is_authenticated %}
+{% block sidebar %}
+    
+    
+     {{ user.get_full_name }} || <a href="{% url 'logout'%}?next={{request.path}}">Wyloguj</a></li>
+   
+  
+    <br><br>
+    
+    <div id="top">
+            <ul>
+              {% if request.user.is_superuser %}<li><a href="{% url 'index' %}">GŁÓWNA</a></li> {% endif %}
+                <li><a href="{% url 'kasa_list' %}">KASA</a></li> 
+                <li><a href="{% url 'zamowienia_list' %}">ZAMÓWIENIA</a></li>
+                <li><a href="{% url 'kosztorysy_list' %}">KOSZTORYSY</a></li>
+                <li><a href="{% url 'obroty_list' %}">OBROTY</a></li>
+                <!-- <li><a href="index.html">ZLECENIA</a></li> --> <!-- baza integra7-->
+                <!--<li><a href="#">KOLEJKI NAPRAW</a></li> -->
+                <!--<li><a href="#">ZADANIA</a></li> -->
+                <!--<li><a href="#">MAGAZYN</a></li> --><!-- baza integra7 -->
+                <!--<li><a href="#">OBROTY</a></li> --> <!-- baza integra7 -->
+                <!--<li><a href="#">NAUKA</a></li> -->
+                <!--<li><a href="#">DO DRUKU</a></li> -->
+                <!--<li><a href="/admin/">ADMIN</a></li> -->
+            </ul>
+        </div>
+    
+  {% endblock %}
+  
+    {% else %}
+     <a href="{% url 'login'%}?next={{request.path}}">Zaloguj</a>
+    {% endif %} 
+  
+  <div id="glowna">
+  
+  {% block content %}
+
+
+  
+  {% endblock %}
+  </div>
+  
+
+  
+</body>
+</html>

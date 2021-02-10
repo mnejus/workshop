@@ -1,0 +1,161 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+{% if request.user.is_superuser %}
+
+<h3>Dodawanie raportów serwisowych mechaników</h3>
+
+    <form action="" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        <label for="file1"> Wybierz plik</label>
+        <input type="file" id="file1" name="file">
+        <small>Tylko pliki z rozszerzeniem .csv</small>
+        <input class="button" name="csv" type="submit" value="Wyślij"> 
+    </form>
+
+<hr>
+    {% endif %}
+<h3>Sprzedaż netto usługi i towary</h3>
+ 
+<h3><form method="POST">Podsumowanie, wybierz miesiąc:
+            {% csrf_token %}
+            <label for="zakres_dat_obrot"> w miesiącu:</label>
+            <input type="month" id="miesiac" name="miesiac" min="2021-01">
+            <input class="button" name="filtr_obroty" type="submit" value="Pokaż"> 
+        </form></h3>        
+
+{% if miesiac == today %}
+
+    <p>W tym miesiącu, do tej pory całkowita sprzedaż wynosi:</p> 
+    <p style="font-size:160%;">Towary: {{ obrot_towary }} zł</p> 
+    <p style="font-size:160%;">Usługi: {{ obrot_uslugi }} zł</p> 
+    <p style="font-size:160%;">Średnia z usług na mechanika (bez kierownika): {{ sredni_obrot_uslugi }} zł</p>
+
+{% elif miesiac != '' and miesiac != today %}
+
+    <p>W {{ miesiac }}</u> całkowita sprzedaż wyniosła:</p>
+    <p style="font-size:160%;">Towary: {{ obrot_towary }} zł</p> 
+    <p style="font-size:160%;">Usługi: {{ obrot_uslugi }} zł</p>
+    <p style="font-size:160%;">Średnia z usług na mechanika (bez kierownika): {{ sredni_obrot_uslugi }} zł</p>
+
+{% elif miesiac == '' %}
+
+<p style="color:red;">Wybierz miesiąc zanim klikniesz "Pokaż"!</p>
+
+{% endif %}
+
+<h3>Wyniki mechaników w danym miesiącu:</h3>
+    <table>
+        <tr>
+            <td>Zakres dat</td>
+            <td>Mechanik</td>
+            <td>Sprzedaż towarów</td>
+            <td>Sprzedaż usług</td>
+        </tr>
+        {% for sprzedaz in obroty %}
+        <tr>
+            
+                <td>od {{ sprzedaz.data_od|date:'d/m/Y' }} do {{ sprzedaz.data_do|date:'d/m/Y' }}</td>
+                <td>{{ sprzedaz.nazwisko_mech}} {{ sprzedaz.imie_mech}}</td>
+                <td>{{ sprzedaz.obrot_towary }} zł</td>
+                <td>{{ sprzedaz.obrot_uslugi }} zł</td>
+            
+        </tr>
+        {% endfor %}
+    </table>
+<br>
+
+<hr>
+
+{% if request.user.is_superuser %}
+
+
+
+<h3>Zestawienie przychodów i rozchodów</h3>
+
+
+    <form method="POST">   
+        Aby zmienić wybierz zakres od: 
+    
+        {% csrf_token %}
+        <label for="zakres_dat"></label>
+        <input type="month" id="zakres_dat" name="data_od" min="2021-01">
+        <label for="zakres_dat"> do: </label>
+        <input type="month" id="zakres_dat" name="data_do">
+        <input class="button" name="filtr" type="submit" value="Pokaż" min="2021-01"> 
+      
+    </form>
+
+{% now "Y-m-d" as dzisiaj %}
+{% if data_od == '' and data_do == '' %}
+    <p>Bieżący miesiąc</p>    
+{% elif data_od != '' and data_do != '' %}
+    <p>Zestawienie od {{ data_od }} do {{ data_do }}</p>
+{% elif data_od == '' and data_do != '' %}
+    <p>Zestawienie od początku do {{ data_do }}</p>
+
+{% elif data_od > dzisiaj %}
+    <p>Jeśli pozostawiasz "zakres do" pusty, to domyślnie jest to zakres do dzisiejszego dnia. Zakres od nie może być późniejszy od bieżącego miesiąca. </p>
+{% elif data_od != '' and data_do == '' %}
+    <p>Zestawienie od {{ data_od }} do {{ dzisiaj }}</p>
+
+{% endif %}
+</h3>
+
+<table>
+    <tr>
+        <td>SUMA PRZYCHODÓW</td><td>{{ sum_przychod }}</td>
+    </tr>
+    <tr>
+        <td>SUMA ROZCHODÓW</td><td>{{ sum_rozchod }}</td>
+    </tr>
+    <tr>
+        <td>DOCHÓD</td><td><strong>{{ dochod }}</strong></td>
+    </tr>
+</table>
+
+<h3>Przychody</h3>
+<table>
+    <tr>
+        <td>naprawy</td>
+        <td>części</td>
+        <td>inne</td>
+    </tr>
+    <tr>
+        <td>{{ sum_przychod_naprawy }}</td>
+        <td>{{ sum_przychod_czesci }}</td>
+        <td>{{ sum_przychod_inne }}</td>
+    </tr>
+</table>
+
+<h3>Rozchody</h3>
+<table>
+    <tr>
+        <td>podwykonawcy</td>
+        <td>części</td>
+        <td>materiały</td>
+        <td>narzędzia/maszyny</td>
+        <td>rachunki/podatki</td>
+        <td>spożywcze</td>
+        <td>myjnia</td>
+        <td>wynagrodzenia</td>
+    </tr>
+    <tr>
+        <td>{{ sum_rozchod_podwykonawcy }}</td>
+        <td>{{ sum_rozchod_czesci }}</td>
+        <td>{{ sum_rozchod_materialy }}</td>
+        <td>{{ sum_rozchod_narzedzia }}</td>
+        <td>{{ sum_rozchod_rachunki }}</td>
+        <td>{{ sum_rozchod_spozywcze }}</td>
+        <td>{{ sum_rozchod_myjnia }}</td>
+        <td>{{ sum_rozchod_wynagrodzenie }}</td>
+    </tr>
+</table>
+
+
+
+ 
+{% endif %}
+
+{% endblock %}

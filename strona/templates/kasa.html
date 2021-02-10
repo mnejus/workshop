@@ -1,0 +1,93 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+  <form action="" method="post">
+    {% csrf_token %}
+    Tytuł płatności: {{ form.tytul_rozchodu_przychodu }}
+    Kwota: {{ form.kwota_rozchodu_przychodu }}
+    Forma płatności: {{ form.forma_platnosci }}
+    Rodzaj płatności: {{ form.rodzaj_platnosci }}
+    <input class="button" name="platnosc" type="submit" value="Zapisz/Otwórz Kasę">
+    <input class="button2" type="reset" value="Wyczyść">
+  </form>
+  
+
+{% if request.user.is_superuser %}
+<form action="" method="post">
+    {% csrf_token %}
+    <p style="font-size:160%;"> Ilość gotówki w kasie: <strong>{{ suma_kasa }} zł</strong>
+    <input class="button" name="otworz_kase" type="submit" value="Otwórz Kasę"></p>
+</form>
+{% endif %}
+
+
+<h3>Zamówienia pobraniowe:</h3>
+  {% if liczba_zamowien_pobraniowych != 0 %}
+  <ol>
+  {% for zam in zam_pobr %}
+    <li><strong>{{ zam.nr_katalogowy }}</strong> kwota do zapłaty: <strong>{{ zam.kwota_plat_przy_odbiorze }}</strong> zł 
+      [<a href="{% url 'kasa_pobranie' pk=zam.pk %}">zapłać</a>]</li>
+  {% endfor %}
+  {% else %}
+  <p class="zle" style="font-size:160%;">Brak zamówień płatnych przy odbiorze.<br> Jeśli za jakieś zamówienie trzeba będzie zapłacić przy odbiorze,
+  upewnij się, że to nie jest oszustwo!</p>
+  {% endif %}
+  </ol>
+
+<h3>Zestawienie:</h3>
+
+<table cellspacing="1" cellpadding="5">
+  <tr style="font-weight:bold;">
+    <td>Data</td>
+    <td>Tytuł</td>
+    <td>Kwota</td>
+    <td>Forma płatności</td>
+    <td>Pracownik wprowadzający</td>
+    <td>Rodzaj płatności</td>
+    <td></td>
+    <td></td>
+  </tr>
+{% for kasa in pozycje %}
+
+  <tr>
+    <td>{{ kasa.data_przychodu_rozchodu|date:'d/m/Y H:i' }}</td>
+    <td>{{ kasa.tytul_rozchodu_przychodu }}</td>
+
+<!-- Kwoty z wynagrodzeniem widoczne tylko dla superuser -->
+    {% if kasa.rodzaj_platnosci == 'r: wynagrodzenie' %}
+      <td>
+      {% if request.user.is_superuser %}
+        {{ kasa.kwota_rozchodu_przychodu }}zł
+      {% endif %}
+      </td>
+    {% else %}
+      <td>{{ kasa.kwota_rozchodu_przychodu }}zł</td>
+    {% endif %}
+
+    <td>{{ kasa.forma_platnosci }}</td>
+    <td>{{ kasa.pracownik.last_name }} {{ kasa.pracownik.first_name }}</td>
+    
+    <td>{{ kasa.rodzaj_platnosci }}</td>
+
+<!-- Możliwość edycji wpisów kasowych z wynagrodzeniem tylko przez superuser -->
+
+    <td>
+      {% if kasa.rodzaj_platnosci == 'r: wynagrodzenie' %}
+        {% if request.user.is_superuser %}
+          <a href="{% url 'kasa_edit' pk=kasa.pk %}">  edytuj  </a>
+        {% endif %}
+      {% else %}
+        <a href="{% url 'kasa_edit' pk=kasa.pk %}">  edytuj  </a>
+      {% endif %}
+    </td>
+    <td>{% if request.user.is_superuser %} <a href="{% url 'kasa_delete' pk=kasa.pk %}">  usuń  </a>  {% endif %} </td>
+    
+  </tr>
+
+{% endfor %}
+</table>
+ 
+
+
+{% endblock %}

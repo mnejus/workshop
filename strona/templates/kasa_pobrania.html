@@ -1,0 +1,17 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+
+
+  <form action="" method="post">
+    {% csrf_token %}
+    Tytuł płatności: <strong style="font-size:160%;">{{ zamowienie.nr_katalogowy }}</strong><br>
+    Ustalona kwota do zapłaty: <strong style="font-size:160%;">{{ zamowienie.kwota_plat_przy_odbiorze }}</strong> zł,
+    jeśli kwota się zgadza, przepisz ustaloną kwotę, jeśli nie, wprowadź prawidłową kwotę: {{ form.kwota_rozchodu_przychodu }}
+    <input class="button" type="submit" value="Otwórz kasę/zapłać pobranie">
+
+  </form>
+  
+
+{% endblock %}

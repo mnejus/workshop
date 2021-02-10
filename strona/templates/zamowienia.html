@@ -1,0 +1,116 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+  <form action="" method="post">
+    {% csrf_token %}
+    <table>
+      <tr>
+        <td>Zamówienie dla:</td><td>{{ form_zam.odbiorca }}</td>
+        <td>Numer lub opis części:</td><td>{{ form_zam.nr_katalogowy }}</td>
+        <td>Ilość:</td><td>{{ form_zam.ilosc }}</td>
+      </tr>
+      <tr>
+        <td>Forma płatności:</td><td>{{ form_zam.forma_platnosci_zam }}</td>
+        <td>Kwota do zapłaty przy odbiorze:</td><td>{{ form_zam.kwota_plat_przy_odbiorze }}</td>
+        <td></td><td></td>
+      </tr>
+      <tr>
+        <td>Dostawca:</td><td>{{ form_zam.dostawca }}</td>
+        <td>Termin dostawy:</td><td>{{ form_zam.termin_dostawy }}</td>
+        <td>Status zamówienia:</td><td>{{ form_zam.wybor_statusu_zam }}</td>
+      </tr>
+    </table>
+    <input class="button" name="dodawanie_zamowienia" type="submit" value="Dodaj">
+    <input class="button2" type="reset" value="Wyczyść">
+  </form>
+
+{% if liczba_zamowien_niedostarczonych > 0 %}
+<p class="zle" style="font-size:160%;">Ilość niedostarczonych pozycji: <strong>{{ liczba_zamowien_niedostarczonych }}</strong></p>
+{% else %} 
+<p class="dobrze" style="font-size:160%;">Wspaniale! Wszystkie zamówienia zrealizowane :)</strong></p>
+{% endif %}
+
+<p> 
+  <form method="POST">
+    {% csrf_token %}
+    <label for="zakres_dat">Wybierz datę, od której chcesz wyświetlić wyniki:</label>
+    <input type="date" id="zakres_dat" name="zakres_dat">
+    <label>Sortowanie:</label>
+    <select name="wybor_sort">
+      <option value=""></option>
+      <option value="odbiorca">odbiorca A-Z</option>
+      <option value="-odbiorca">odbiorca Z-A</option>
+      <option value="data_zamowienia">data zamówienia najstarsze</option>
+      <option value="-data_zamowienia">data zamówienia najmłodsze</option>
+      <option value="dostawca">dostawca A-Z</option>
+      <option value="-dostawca">dostawca Z-A</option>
+      <option value="wybor_statusu_zam">status zamówienia A-Z</option>
+      <option value="-wybor_statusu_zam">status zamówienia Z-A</option>
+    </select>
+    <input class="button" name="sortowanie" type="submit" value="Zatwierdź">
+    Wybrane sortowanie: 
+      <strong>
+        {% if wybor_sortowania == 'odbiorca' %} Odbiorcy od A do Z
+        {% elif wybor_sortowania == '-odbiorca' %} Odbiorcy od Z do A
+        {% elif wybor_sortowania == 'data_zamowienia' %} Data zamówienia od najstarszych
+        {% elif wybor_sortowania == '-data_zamowienia' %} Data zamówienia od najmłodszych
+        {% elif wybor_sortowania == 'dostawca' %} Dostawcy od A do Z
+        {% elif wybor_sortowania == '-dostawca' %} Dostawcy od Z do A
+        {% elif wybor_sortowania == 'wybor_statusu_zam' %} Status zamówienia od A do Z
+        {% elif wybor_sortowania == '-wybor_statusu_zam' %} Status zamówienia od Z do A
+        {% else %} Sortowanie domyślne {% endif %} 
+      </strong>
+        
+        {% if zakres_dat != '' %}
+        od daty <strong>{{ zakres_dat }}</strong>
+        {% else %}
+        wszystkich zamówień
+        {% endif %}
+  </form>
+</p>
+
+
+<table cellspacing="1" cellpadding="5">
+  <tr style="font-weight:bold;">
+    <td>Data</td>
+    <td>Dla kogo</td>
+    <td>Nr części/opis</td>
+    <td>Ilość</td>
+    <td>Dostawca</td>
+    <td>Termin dostawy</td>
+    <td>Forma płatności</td>
+    <td>Kwota do zapłaty</td>
+    <td>Status zamówienia</td>
+    <td>Pracownik zamawiający</td>
+    <td></td>
+  </tr>
+{% for zamowienia in zamowienia_all %}
+
+  <tr>
+    <td>{{ zamowienia.data_zamowienia|date:'d/m/Y H:i' }}</td>
+    <td>{{ zamowienia.odbiorca }}</td>
+    <td>{{ zamowienia.nr_katalogowy }}</td>
+    <td>{{ zamowienia.ilosc }}</td>
+    <td>{{ zamowienia.dostawca }}</td>
+    <td>{{ zamowienia.termin_dostawy }}</td>
+    <td>{{ zamowienia.forma_platnosci_zam }}</td>
+    <td>{{ zamowienia.kwota_plat_przy_odbiorze }}</td>
+
+    {% if zamowienia.wybor_statusu_zam == 'czeka' %}
+        <td style="color:red">{{ zamowienia.wybor_statusu_zam }} - <a href="{% url 'zamowienia_edit' pk=zamowienia.pk %}">  [edytuj]  </a></td>
+    {% else %}
+        <td>{{ zamowienia.wybor_statusu_zam }} - <a href="{% url 'zamowienia_edit' pk=zamowienia.pk %}">  [edytuj]  </a></td>
+    {% endif %}
+    
+    <td>{{ zamowienia.pracownik_zam.last_name }} {{ zamowienia.pracownik_zam.first_name }}</td>
+    <td>{% if request.user.is_superuser %} <a href="{% url 'zamowienie_delete' pk=zamowienia.pk %}">  usuń  </a>  {% endif %} </td>
+    
+  </tr>
+
+{% endfor %}
+</table>
+ 
+
+
+{% endblock %}

@@ -1,0 +1,17 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+{% if request.user.is_superuser %}
+
+<p>Chcesz usunąć pozycję:<br><br> {{ kasa.tytul_rozchodu_przychodu }} z dnia
+{{ kasa.data_przychodu_rozchodu }} z kwotą: {{ kasa.kwota_rozchodu_przychodu }}</p>
+
+<form action="" method="POST">
+  {% csrf_token %}
+  <input type="submit" value="Tak, potwierdzam">
+</form>
+
+{% endif %}
+
+{% endblock %}

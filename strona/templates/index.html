@@ -1,0 +1,20 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+{% if request.user.is_superuser %}
+
+W planach: <br>
+<ul>
+    <li>instrukcja obsługi centrali telefonicznej (kody wywołań)</li>
+    <li>kody kasy fisklanej</li>
+    <li>Terminarz z przypomnieniami (integracja z google?)</li>
+    <li></li>
+    <li>Zmiana: dodać model Klient, żeby przy dodawaniu zamówienia wybierać klienta z listy klientów tworzonych na bieżąco
+        w module zamówień
+    </li>
+</ul>
+ 
+{% endif %}
+
+{% endblock %}

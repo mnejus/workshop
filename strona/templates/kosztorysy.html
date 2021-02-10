@@ -1,0 +1,90 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+<script>
+  function op(obj) {
+  x=document.getElementById(obj);
+  if(x.style.display == "none") x.style.display = "block";
+  else x.style.display = "none"
+  }
+</script>
+
+  <h2><a href="/" onClick="op('poka'); return false;">Dodaj kosztorys (kliknij, aby pokazać/schować formularz)</a></h2>
+
+  <div id="poka" style="display:none">
+  <form action="" method="post">
+    {% csrf_token %}
+    <h3>Dane klienta:</h3>
+    Nazwa Klienta: {{ form.nazwa_klienta }}
+    Telefon: {{ form.tel_klienta }}
+    E-mail: {{ form.mail_klienta }}
+    <h3>Dane pojazdu:</h3>
+    Marka/model: {{ form.marka_model }}
+    Nr VIN: {{ form.nr_vin }}
+    <h3>Opis zlecenia:</h3>
+    {{ form.opis_kosztorysu }}<br>
+    <input class="button" name="nowy_kosztorys" type="submit" value="Zapisz">
+    <input class="button2" type="reset" value="Wyczyść">
+  </form>
+</div>
+
+
+    <h3>Aktywne zgłoszenia:</h3>
+  <table>
+      <tr>
+          <td>Data zgłoszenia</td>
+          <td>Nazwa klienta</td>
+          <td>Marka/model</td>
+          <td>Status kosztorysu</td>
+          <td></td>
+          <td></td>
+      </tr>
+
+      {% for kosztorys in kosztorysy %}
+      {% if kosztorys.status_kosztorysu != 'wysłany' and kosztorys.status_kosztorysu != 'zatwierdzony, umówiony' %}
+
+      <tr>
+          <td>{{ kosztorys.data_zgloszenia }}</td>
+          <td>{{ kosztorys.nazwa_klienta }}</td>
+          <td>{{ kosztorys.marka_model }}</td>
+          <td>{{ kosztorys.status_kosztorysu }}</td>
+          <td><a href="{% url 'kosztorys_edit' pk=kosztorys.pk %}">podgląd/edycja</a></td>
+          <td><a href="{% url 'kosztorys_delete' pk=kosztorys.pk %}">usuń</a></td>
+      </tr>
+      {% endif %}
+      {% endfor %}
+  </table>
+
+  <h3>Zgłoszenia archiwlane:</h3>
+  <table>
+    <tr>
+        <td>Data zgłoszenia</td>
+        <td>Nazwa klienta</td>
+        <td>Marka/model</td>
+        <td>Status kosztorysu</td>
+        <td></td>
+        <td></td>
+    </tr>
+
+    {% for kosztorys in kosztorysy %}
+    {% if kosztorys.status_kosztorysu == 'wysłany' or kosztorys.status_kosztorysu == 'zatwierdzony, umówiony' %}
+    <tr>
+        <td>{{ kosztorys.data_zgloszenia }}</td>
+        <td>{{ kosztorys.nazwa_klienta }}</td>
+        <td>{{ kosztorys.marka_model }}</td>
+        <td>{{ kosztorys.status_kosztorysu }}</td>
+        <td><a href="{% url 'kosztorys_edit' pk=kosztorys.pk %}">podgląd/edycja</a></td>
+        <td><a href="{% url 'kosztorys_delete' pk=kosztorys.pk %}">usuń</a></td>
+    </tr>
+    {% endif %}
+    {% endfor %}
+</table>
+
+
+
+
+
+  
+
+{% endblock %}

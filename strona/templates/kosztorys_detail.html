@@ -1,0 +1,35 @@
+{% extends "base_generic.html" %}
+
+{% block content %}
+
+{% if kosztorys.status_kosztorysu == 'niezaakceptowany' and kosztorys.powod_odrzucenia == '' %}
+<p class="zle" style="font-size:160%;">Wskaż powód niezaakceptowania kosztorysu przez klienta!</p>
+{% endif %}
+
+<h3>Edycja zgłoszenia kosztorysu </h3>
+
+  <form action="" method="post">
+    {% csrf_token %}
+    <h3>Status zgłoszenia: {{ form.status_kosztorysu }}
+        <input class="button" name="edycja_kosztorysu" type="submit" value="Zapisz">
+    <input class="button2" type="reset" value="Wyczyść">
+    </h3>
+    {% if kosztorys.status_kosztorysu == 'niezaakceptowany' %}
+    Powód odrzucenia kosztorysu:<br>
+    {{ form.powod_odrzucenia }}
+    {% endif %}
+    <h3>Dane klienta:</h3>
+    Nazwa Klienta: {{ form.nazwa_klienta }}
+    Telefon: {{ form.tel_klienta }}
+    Forma płatności: {{ form.forma_platnosci }}
+    E-mail: {{ form.mail_klienta }}
+    <h3>Dane pojazdu:</h3>
+    Marka/model: {{ form.marka_model }}
+    Nr VIN: {{ form.nr_vin }}
+    <h3>Opis zlecenia:</h3>
+    {{ form.opis_kosztorysu }}<br>
+    
+  </form>
+
+
+{% endblock %}
